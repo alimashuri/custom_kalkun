@@ -1,0 +1,82 @@
+listen *:80;
+server_name kalkun.local;
+index index.php;
+root  /home/blackshell/Documents/mashuri/kalkun;
+
+   access_log  /home/blackshell/Documents/mashuri/kalkun/nginx_access.log;
+   error_log   /home/blackshell/Documents/mashuri/kalkun/nginx_error.log;
+
+	
+
+location /
+{
+	root  /home/blackshell/Documents/mashuri/kalkun;
+        index index.php index.html index.htm;
+	
+
+	# canonicalize codeigniter url end points
+	# if your default controller is something other than "welcome" you should change the following
+	if ($request_uri ~* ^(/welcome(/index)?|/index(.php)?)/?$)
+	{
+		rewrite ^(.*)$ / permanent;
+	}
+ 
+	# removes trailing "index" from all controllers
+	if ($request_uri ~* index/?$)
+	{
+		rewrite ^/(.*)/index/?$ /$1 permanent;
+	}
+ 
+	# removes trailing slashes (prevents SEO duplicate content issues)
+	if (!-d $request_filename)
+	{
+		rewrite ^/(.+)/$ /$1 permanent;
+	}
+ 
+	# removes access to "system" folder, also allows a "System.php" controller
+	if ($request_uri ~* ^/system)
+	{
+		rewrite ^/(.*)$ /index.php?/$1 last;
+		break;
+	}
+ 
+	# unless the request is for a valid file (image, js, css, etc.), send to bootstrap
+	if (!-e $request_filename)
+	{
+		rewrite ^/(.*)$ /index.php?/$1 last;
+		break;
+	}
+ 
+
+}
+
+location ~ \.php$ {
+        include /etc/nginx/fastcgi_params;
+		fastcgi_index index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        fastcgi_param  REQUEST_URI      $request_uri;
+        fastcgi_param  QUERY_STRING     $query_string;
+        fastcgi_param  REQUEST_METHOD   $request_method;
+        fastcgi_param  CONTENT_TYPE     $content_type;
+        fastcgi_param  CONTENT_LENGTH   $content_length;
+        fastcgi_pass   $my_fastcgi_pass;
+	}
+
+
+
+
+
+error_page 502 503 504  /error_others.html;
+location = /error_others.html {
+        root /home/blackshell/Documents/mashuri;
+}
+
+error_page 404 /404.html;
+location = /404.html {
+        root /home/blackshell/Documents/mashuri;
+}
+
+error_page 500 /500.html;
+location = /500.html {
+        root /home/blackshell/Documents/mashuri;
+}
