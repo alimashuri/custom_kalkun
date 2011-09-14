@@ -8,6 +8,13 @@
 * Author URI: http://mashuri.web.id
 */
 
+function autoreply_with_filter_initialize()
+{
+	$CI =& get_instance();
+	$config['css_plugin'] = $CI->config->item('plugins_path').'autoreply_with_filter/views/';
+	//$config['css_plugin'] = 'autoreply_with_filter/views/';
+	return $config;
+}
 
 // Add hook for incoming message
 add_action("message.incoming.before", "autoreply_with_filter", 13);
@@ -62,15 +69,14 @@ function autoreply_with_filter_install()
 
 function autoreply_with_filter($sms)
 {
-	//$config = simple_autoreply_initialize();
+	//$config = autoreply_with_filter_initialize();
     $CI =& get_instance();
-    $CI->load->model('Message_model');
-	$data['coding'] = 'default';
-	$data['class'] = '1';
-	$data['dest'] = $sms->SenderNumber;
-	$data['date'] = date('Y-m-d H:i:s');
-	$data['message'] = $config['message'];
-	$data['delivery_report'] = 'default';
-	$data['uid'] = $config['uid'];	
-	$CI->Message_model->send_messages($data);
+    $CI->load->model('autoreply_with_filter/Autoreply_with_filter_model');
+    $data = $CI->Autoreply_with_filter_model->get_setting(1);
+	if($data->num_rows()==1){
+		if($data->row('enable') == 'true' or $data->row('enable') == true) {
+			$CI->Autoreply_with_filter_model->set_autoreply($sms);
+		}
+	}
+   
 }

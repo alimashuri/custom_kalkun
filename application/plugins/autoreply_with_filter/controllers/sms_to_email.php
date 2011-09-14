@@ -20,17 +20,17 @@
  */
 include_once(APPPATH.'plugins/Plugin_Controller.php');
 
-class SMS_to_email extends Plugin_Controller {
+class Autoreply_with_filter extends Plugin_Controller {
 	
 	function SMS_to_email()
 	{
 		parent::Plugin_Controller();		
-		$this->load->model('sms_to_email_model', 'plugin_model');
+		$this->load->model('Autoreply_with_filter_model', 'plugin_model');
 	}
 	
 	function index()
 	{
-		$data['title'] = 'SMS to Email Settings';
+		$data['title'] = 'Autoreply with filter v.0.1 (aplha.rc.1)';
 		$data['main'] = 'index';
 		$data['settings'] = $this->plugin_model->get_setting($this->session->userdata('id_user'));
 		if ($data['settings']->num_rows()==1) $data['mode'] = 'edit';

@@ -1,30 +1,37 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->config->item('plugins_path');?>autoreply_with_filter/views/index.css">
 <div id="window_container">
 <div id="window_title"><?php echo $title; ?></div>
 <div id="window_content">
-<?php echo form_open('plugin/sms_to_email/save', array('id' => 'settingsForm'));?>
+<?php echo form_open('plugin/autoreply_with_filter/save', array('id' => 'settingsForm'));?>
 <table width="100%" cellpadding="5">
 <tr valign="top">
-<td width="175px"><?php echo lang('tni_email_forward'); ?></td>
-<td>
-<?php 
-$email_forward = array('true' => lang('tni_yes'), 'false' => lang('tni_no'));
-if($settings->num_rows()==1)
-{
-	$email_forward_act = $settings->row('email_forward'); 
-}
-else
-{
-	$email_forward_act = 'false';	
-}
-echo form_dropdown('email_forward', $email_forward, $email_forward_act);  
-?>
-</td>
+	<td width="175px"><?php echo lang('plugin_enable_autoreply_filter'); ?></td>
+	<td>
+	<?php 
+	$email_forward = array('true' => lang('tni_yes'), 'false' => lang('tni_no'));
+	if($settings->num_rows()==1)
+	{
+		$email_forward_act = $settings->row('enable'); 
+	}
+	else
+	{
+		$email_forward_act = 'false';	
+	}
+	echo form_dropdown('enable_plugins', $email_forward, $email_forward_act);  
+	?>
+	</td>
 </tr>
 
 <tr valign="top">
-<td><?php echo lang('tni_email_address'); ?></td>
+<td><?php echo lang('plugin_word_list'); ?></td>
 <td>
-<input type="text" name="email_id" class="email" value="<?php if($settings->num_rows()==1) echo $settings->row('email_id');?>" />
+<input type="text" name="word_list" class="email" value="<?php if($settings->num_rows()==1) echo $settings->row('wordlist');?>" /><span><?php echo lang('plugin_atention'); ?></span></td>
+</tr>
+
+<tr valign="top">
+<td><?php echo lang('plugin_text_reply'); ?></td>
+<td>
+	<textarea id="text_reply" cols="50" rows="5" name="text_reply"><?php if($settings->num_rows()==1) echo $settings->row('textreply');?></textarea> 
 </td>
 </tr>
 </table>
@@ -32,5 +39,9 @@ echo form_dropdown('email_forward', $email_forward, $email_forward_act);
 <input type="hidden" name="mode" value="<?php echo $mode;?>" /> 
 <div align="center"><input type="submit" id="submit" value="<?php echo lang('kalkun_save'); ?>" /></div>
 <?php echo form_close();?>
+
+		<div class="clear"><small> 
+		<strong>Version:</strong> 0.1 alpha&nbsp;&nbsp;
+		<strong>Author:</strong> <a href="http://mashuri.web.id">Ali Mashuri</a>		</small></div> 
 
 </div>

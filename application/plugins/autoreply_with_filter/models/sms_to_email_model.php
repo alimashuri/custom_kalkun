@@ -18,9 +18,9 @@
  * @subpackage	Plugin
  * @category	Models
  */
-class SMS_to_email_model extends Model {
+class Autoreply_with_filter_model extends Model {
 	
-	function SMS_to_email_model()
+	function Autoreply_with_filter_model()
 	{
 		parent::Model();
 	}	
