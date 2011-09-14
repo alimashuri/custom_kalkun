@@ -31,7 +31,8 @@
 <tr valign="top">
 <td><?php echo lang('plugin_text_reply'); ?></td>
 <td>
-	<textarea id="text_reply" cols="50" rows="5" name="text_reply"><?php if($settings->num_rows()==1) echo $settings->row('textreply');?></textarea> 
+	<textarea class="word_count" id="text_reply" cols="50" rows="5" name="text_reply"><?php if($settings->num_rows()==1) echo $settings->row('textreply');?></textarea>
+	<div style="float: left"><span class="counter">19 characters / 1 message(s)</span></div> 
 </td>
 </tr>
 </table>
@@ -43,5 +44,20 @@
 		<div class="clear"><small> 
 		<strong>Version:</strong> 0.1 alpha&nbsp;&nbsp;
 		<strong>Author:</strong> <a href="http://mashuri.web.id">Ali Mashuri</a>		</small></div> 
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.word_count').each(function(){   
+	var length = $(this).val().length;  
+	var message = Math.ceil(length/sms_char);
+	$(this).parent().find('.counter').html( length + ' characters / ' + message + ' message(s)');  
+		$(this).keyup(function(){  
+			var new_length = $(this).val().length;  
+			var message = Math.ceil(new_length/sms_char);
+			 $(this).parent().find('.counter').html( new_length + ' characters / ' + message + ' message(s)');  
+		});  
+	});
+});
+</script>
 
 </div>
