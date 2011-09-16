@@ -53,7 +53,7 @@
 	<?php echo form_radio('filter_to','all',true,'id="filter_to_all"');?> <?php echo lang('plugin_all'); ?>
 	<?php echo form_radio('filter_to','specific',false,'id="filter_to_specific"');?> <?php echo lang('plugin_specific'); ?><br/>
 	<div id="person" style="display:none;">
-		<textarea id="personvalue" style="width: 95%;" name="personvalue" /></textarea>
+		<textarea id="personvalue" style="width: 95%;" name="personvalue" /><?php if($settings->num_rows()==1) echo $settings->row('number');?></textarea>
 	</div>
 </td>
 </tr>
