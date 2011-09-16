@@ -35,9 +35,54 @@ class Autoreply_with_filter_model extends Model {
 	
 	function save_setting()
 	{
+		switch($this->input->post('filter_to')) 
+			{
+				// Phonebook
+				case 'specific':
+				$tmp_dest = explode(',', $this->input->post('personvalue'));
+				$dest = array();
+				foreach ($tmp_dest as $key => $tmp)
+				{
+					if (trim($tmp)!='')
+					{
+						list ($id, $type) = explode(':', $tmp);
+						// Person
+						if ($type=='c')
+						{
+							// Already sent, no need to send again
+							if (in_array($id, $dest)) 
+							{
+								continue;	
+							}
+							$dest[] = $id;
+						}
+						// Group
+						else
+						{
+							$param = array('option' => 'bygroup', 'group_id' => $id);
+							foreach ($this->Phonebook_model->get_phonebook($param)->result() as $group)
+							{
+								// Already sent, no need to send again
+								if (in_array($group->Number, $dest)) 
+								{
+									continue;	
+								}
+								$dest[] = $group->Number;
+							}
+						}
+					}
+				}
+				$dest = preg_replace('/^08/','+628',$dest);
+				break;
+				case "all":
+					$dest=null;
+				break;
+			}
 		$this->db->set('wordlist', $this->input->post('word_list'));
 		$this->db->set('textreply', $this->input->post('text_reply'));
 		$this->db->set('enable', $this->input->post('enable_plugins'));
+		$this->db->set('filter_to', $this->input->post('filter_to'));
+		$this->db->set('number', implode(',',$dest));
 
 		if ($this->input->post('mode')=='edit')
 		{
@@ -54,11 +99,13 @@ class Autoreply_with_filter_model extends Model {
 	function set_autoreply($data){
 		$data['coding'] = 'default';
 		$data['class'] = '1';
-		//$data['dest'] = $sms->SenderNumber;
-		//$data['message'] = $sms->TextDecoded;
+		$data['dest'] = $sms->SenderNumber;
+		$data['message'] = $sms->TextDecoded;
 		$data['date'] = date('Y-m-d H:i:s');
 		$data['delivery_report'] = 'default';
 		$data['uid'] = '1';	
+		$data['filter_to'] = $this->get_data('filter_to');	
+		$data['number'] = $this->get_data('number');	
 		$data['wordlist'] = $this->get_data('wordlist');	
 		$data['textreply'] = $this->get_data('textreply');	
 		$this->send_messages_autoreply($data);
@@ -67,11 +114,20 @@ class Autoreply_with_filter_model extends Model {
 	function get_data($option){
 		$data = $this->get_setting(1);
 		if($data->num_rows()==1){
-			if($option == 'wordlist'){
-				return explode(',',$data->row('wordlist'));
-			}else{
-				return $data->row('textreply');
-			}
+			switch($option){
+				case "wordlist":
+					return explode(',',$data->row('wordlist'));
+				break;
+				case "textreply":
+					return $data->row('textreply');
+				break;
+				case"filter_to":
+					return $data->row('filter_to');
+				break;
+				case"number":
+					return explode(',',$data->row('number'));
+				break;
+			}			
 		}		
 	}
 	
@@ -85,16 +141,33 @@ class Autoreply_with_filter_model extends Model {
         // check if wap msg
         if(isset($data['type']) AND $data['type']=='waplink') { $CI->Message_model->_send_wap_link($data); return ;} 
 		
-		$keyword_found = false;
-		foreach($data['wordlist'] as $keyword){
-			if(preg_match('/\b'.$keyword.'\b/i', $data['message'])){
-				$keyword_found = true;break;
-			}else{
-				$keyword_found = false;
+		$autoreply = false;
+		if($data['filter_to'] == 'specific'){
+			$keyword_found = false;
+			$filter_to = false;
+			foreach($data['number'] as $dest){
+				if($data['dest'] == $dest){
+					$filter_to = true;break;
+				}
+			}	
+				
+			foreach($data['wordlist'] as $keyword){
+				if(preg_match('/\b'.$keyword.'\b/i', $data['message'])){
+					$keyword_found = true;break;
+				}
+			}		
+			if($keyword_found && $filter_to){
+				$autoreply = true;
 			}
+		}else{
+			foreach($data['wordlist'] as $keyword){
+				if(preg_match('/\b'.$keyword.'\b/i', $data['message'])){
+					$autoreply = true;break;
+				}
+			}			
 		}
 		$data['message'] = $data['textreply'];
-        if($data['dest']!=NULL && $data['date']!=NULL && $data['message']!=NULL)
+        if($data['dest']!=NULL && $data['date']!=NULL && $data['message']!=NULL && $autoreply)
 		{	
 			// Check coding
 			switch($data['coding'])

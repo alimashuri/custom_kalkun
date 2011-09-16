@@ -25,7 +25,7 @@ class Autoreply_with_filter extends Plugin_Controller {
 	function Autoreply_with_filter()
 	{
 		parent::Plugin_Controller();		
-		$this->load->model('Autoreply_with_filter_model', 'plugin_model');
+		$this->load->model('Autoreply_with_filter_model', 'plugin_model','Phonebook_model');
 	}
 	
 	function index()
@@ -42,47 +42,6 @@ class Autoreply_with_filter extends Plugin_Controller {
 	{
 		if ($_POST)
 		{
-			switch($this->input->post('filter_to')) 
-			{
-				// Phonebook
-				case 'specific':
-				$tmp_dest = explode(',', $this->input->post('personvalue'));
-				foreach ($tmp_dest as $key => $tmp)
-				{
-					if (trim($tmp)!='')
-					{
-						list ($id, $type) = explode(':', $tmp);
-						// Person
-						if ($type=='c')
-						{
-							// Already sent, no need to send again
-							if (in_array($id, $dest)) 
-							{
-								continue;	
-							}
-							$dest[] = $id;
-						}
-						// Group
-						else
-						{
-							$param = array('option' => 'bygroup', 'group_id' => $id);
-							foreach ($this->Phonebook_model->get_phonebook($param)->result() as $group)
-							{
-								// Already sent, no need to send again
-								if (in_array($group->Number, $dest)) 
-								{
-									continue;	
-								}
-								$dest[] = $group->Number;
-							}
-						}
-					}
-				}
-				break;
-				case "":
-				
-				break;
-			}
 			$this->plugin_model->save_setting();
 			redirect('plugin/autoreply_with_filter');
 		}
