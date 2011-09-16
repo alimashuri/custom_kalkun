@@ -35,6 +35,17 @@
 	<div style="float: left"><span class="counter">19 characters / 1 message(s)</span></div> 
 </td>
 </tr>
+
+<tr valign="top">
+<td><?php echo lang('plugin_filter_to'); ?></td>
+<td>
+	<?php echo form_radio('filter_to','all',true,'id="filter_to_all"');?> <?php echo lang('plugin_all'); ?>
+	<?php echo form_radio('filter_to','specific',false,'id="filter_to_specific"');?> <?php echo lang('plugin_specific'); ?><br/>
+	<div id="filter_to_number" style="display:none;">
+	<h1>afasdfasdf</h1>
+	</div>
+</td>
+</tr>
 </table>
 <br />
 <input type="hidden" name="mode" value="<?php echo $mode;?>" /> 
@@ -47,6 +58,7 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
+	var sms_char = 160;
 	$('.word_count').each(function(){   
 	var length = $(this).val().length;  
 	var message = Math.ceil(length/sms_char);
@@ -56,6 +68,12 @@ $(document).ready(function() {
 			var message = Math.ceil(new_length/sms_char);
 			 $(this).parent().find('.counter').html( new_length + ' characters / ' + message + ' message(s)');  
 		});  
+	});
+
+	
+	$("input[name='filter_to']").click(function() {
+			if($(this).val()=='all')  { $("#filter_to_number").hide(); }
+			if($(this).val()=='specific')  { $("#filter_to_number").show(); }
 	});
 });
 </script>
