@@ -299,5 +299,14 @@ $lang['tni_default'] = "Default";
 $lang['tni_set_deliv_report'] = "Delivery Report"; 
 
 
+$lang['plugin_enable_autoreply_filter'] = "Enable Autoreply With filter"; 
+$lang['plugin_word_list'] = "Word List"; 
+$lang['plugin_text_reply'] = "Reply Text"; 
+$lang['plugin_atention'] = "Sparate by comma"; 
+$lang['plugin_filter_to'] = "Filtering To"; 
+$lang['plugin_all'] = "All Incoming Message"; 
+$lang['plugin_specific'] = "Specific Number or Group"; 
+
+
 /* End of file kalkun_lang.php */
 /* Location: ./application/language/english/kalkun_lang.php */
